@@ -1,13 +1,12 @@
 import React from "react";
-import { getSinglePost } from "../../../lib/notionAPI";
+import { getAllPosts, getSinglePost } from "../../../lib/notionAPI";
 
 export const getStaticPaths = async () => {
+  const allPosts = await getAllPosts();
+  const paths = allPosts.map(({ slug }) => ({ params: { slug } }));
+
   return {
-    paths: [
-      { params: { slug: "first-post" } },
-      { params: { slug: "second-post" } },
-      { params: { slug: "third-post" } },
-    ],
+    paths: paths,
     fallback: "blocking",
     // fallback: false は、存在しないページにアクセスした場合に404ページを表示する
     // fallback: "blocking"は、存在しないページにアクセスした場合に、ビルド時に指定したパスを表示する
