@@ -32,7 +32,7 @@ const getPageMetaData = (post) => {
 
   return {
     id: post.id,
-    title: post.properties.name.title[0].plain_text,
+    title: post.properties.title.title[0].plain_text,
     description: post.properties.description.rich_text[0].plain_text,
     date: post.properties.date.date.start,
     slug: post.properties.slug.rich_text[0].plain_text,
@@ -65,4 +65,12 @@ export const getSinglePost = async (slug) => {
     metadata,
     markdown: mbString,
   };
+};
+
+// Top　ページ用記事の取得(4つ)
+export const getPostsForTopPage = async (pageSize: number) => {
+  const allPosts = await getAllPosts();
+  const fourPost = allPosts.slice(0, pageSize);
+
+  return fourPost;
 };

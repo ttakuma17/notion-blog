@@ -1,7 +1,14 @@
 import React from "react";
 import { getAllPosts, getSinglePost } from "../../../lib/notionAPI";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+// esm　から import するとインポートができない
+// import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import Link from "next/link";
+import { GetStaticPaths, GetStaticProps } from "next";
 
-export const getStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   const allPosts = await getAllPosts();
   const paths = allPosts.map(({ slug }) => ({ params: { slug } }));
 
@@ -14,7 +21,7 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   const post = await getSinglePost(params.slug);
 
   return {
@@ -37,7 +44,33 @@ const Post = ({ post }) => {
           {tag}
         </p>
       ))}
-      <div className="mt-10 font-medium">{post.markdown}</div>
+      <div className="mt-10 font-medium">
+        <ReactMarkdown
+          children={post.markdown}
+          components={{
+            code({ node, inline, className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || "");
+              return !inline && match ? (
+                <SyntaxHighlighter
+                  {...props}
+                  children={String(children).replace(/\n$/, "")}
+                  style={vscDarkPlus}
+                  language={match[1]}
+                  PreTag="div"
+                />
+              ) : (
+                <code {...props} className={className}>
+                  {children}
+                </code>
+              );
+            },
+          }}
+        ></ReactMarkdown>
+
+        <Link href="/">
+          <span className="pb-20 block mt-3 text-sky-600"> ← ホームに戻る</span>
+        </Link>
+      </div>
     </section>
   );
 };

@@ -1,15 +1,22 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import { getPostsForTopPage } from "../../lib/notionAPI";
+import { getPostsForTopPage } from "../../../../lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
-import Link from "next/link";
+import { GetStaticPaths, GetStaticProps } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 
 // SSG - ビルドした時点でデータを取得している
 // ISR - SSG もしつつ○秒ごとに更新する revalidate: 60
 
-export const getStaticProps = async () => {
+export const getStaticPaths: GetStaticPaths = async (params) => {
+  return {
+    paths: [{ params: { page: "1" } }, { params: { page: "2" } }],
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps = async () => {
   const fourPosts = await getPostsForTopPage(4);
 
   return {
@@ -21,8 +28,7 @@ export const getStaticProps = async () => {
   };
 };
 
-export default function Home({ fourPosts }) {
-  // console.log(allPosts);
+const BlogPageList = ({ fourPosts }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -35,23 +41,23 @@ export default function Home({ fourPosts }) {
         <h1 className="text-5xl font-medium text-center mb-16">
           Notion Blog 🚀
         </h1>
-        {fourPosts.map((post) => (
-          <SinglePost
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            tags={post.tags}
-            slug={post.slug}
-            isPagenationPage={false}
-          />
-        ))}
-        <Link
-          href="/posts/page/1"
-          className="mb-6 lg:w-1/2 mx-auto rounded-md px-5 block text-right"
-        >
-          .....もっとみる
-        </Link>
+        <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
+          {fourPosts.map((post) => (
+            <div>
+              <SinglePost
+                title={post.title}
+                description={post.description}
+                date={post.date}
+                tags={post.tags}
+                slug={post.slug}
+                isPagenationPage={true}
+              />
+            </div>
+          ))}
+        </section>
       </main>
     </div>
   );
-}
+};
+
+export default BlogPageList;
