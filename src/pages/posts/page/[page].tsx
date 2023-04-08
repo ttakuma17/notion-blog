@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import { getPostsForTopPage } from "../../../../lib/notionAPI";
+import { getPostsByPage, getNumberOfPages } from "../../../../lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
 import { GetStaticPaths, GetStaticProps } from "next";
 
@@ -9,26 +9,35 @@ const inter = Inter({ subsets: ["latin"] });
 // SSG - ビルドした時点でデータを取得している
 // ISR - SSG もしつつ○秒ごとに更新する revalidate: 60
 
-export const getStaticPaths: GetStaticPaths = async (params) => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const numberOfPage = await getNumberOfPages();
+
+  let params = [];
+
+  for (let i = 1; i <= numberOfPage; i++) {
+    params.push({ params: { page: i.toString() } });
+  }
   return {
-    paths: [{ params: { page: "1" } }, { params: { page: "2" } }],
+    paths: params,
     fallback: "blocking",
   };
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const fourPosts = await getPostsForTopPage(4);
+export const getStaticProps: GetStaticProps = async (context) => {
+  const currentPage = context.params?.page;
+  const postsByPage = await getPostsByPage(
+    parseInt(currentPage.toString(), 10)
+  );
 
   return {
     props: {
-      // allPosts: allPosts, 1行へまとめておく
-      fourPosts,
+      postsByPage,
     },
     revalidate: 60,
   };
 };
 
-const BlogPageList = ({ fourPosts }) => {
+const BlogPageList = ({ postsByPage }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -42,7 +51,7 @@ const BlogPageList = ({ fourPosts }) => {
           Notion Blog 🚀
         </h1>
         <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
-          {fourPosts.map((post) => (
+          {postsByPage.map((post) => (
             <div>
               <SinglePost
                 title={post.title}
