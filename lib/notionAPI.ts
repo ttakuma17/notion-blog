@@ -12,6 +12,13 @@ export const getAllPosts = async () => {
   const posts = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID,
     page_size: 100,
+    filter: {
+      property: "Published",
+      checkbox: {
+        equals: true,
+      },
+    },
+    sorts: [{ property: "date", direction: "descending" }],
   });
 
   const allPosts = posts.results;
@@ -23,7 +30,6 @@ export const getAllPosts = async () => {
 
 const getPageMetaData = (post) => {
   const getTags = (tags) => {
-    console.log(tags);
     const allTags = tags.map((tag) => {
       return tag.name;
     });
