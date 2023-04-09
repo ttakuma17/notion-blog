@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import { NotionToMarkdown } from "notion-to-md";
 import { NUMBER_OF_POSTS_PER_PAGE } from "../constants/constants";
+import { NotionPage } from "../interfaces/notionPage";
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
@@ -33,8 +34,8 @@ export const getAllPosts = async () => {
   });
 };
 
-const getPageMetaData = (post) => {
-  const getTags = (tags) => {
+const getPageMetaData = (post: NotionPage) => {
+  const getTags = (tags: NotionPage["properties"]["tags"]["multi_select"]) => {
     const allTags = tags.map((tag) => {
       return tag.name;
     });
@@ -52,9 +53,15 @@ const getPageMetaData = (post) => {
   };
 };
 
-export const getSinglePost = async (slug) => {
+export const getSinglePost = async (slug: string) => {
+  const databaseId = process.env.NOTION_DATABASE_ID;
+
+  if (!databaseId) {
+    throw new Error("データベースIDが設定されていません");
+  }
+
   const response = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID,
+    database_id: databaseId,
     filter: {
       property: "slug",
       formula: {
@@ -66,6 +73,7 @@ export const getSinglePost = async (slug) => {
   });
 
   const page = response.results[0];
+  console.log(page);
   const metadata = getPageMetaData(page);
 
   const mdBlocks = await n2m.pageToMarkdown(page.id);
