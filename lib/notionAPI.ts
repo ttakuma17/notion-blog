@@ -9,8 +9,13 @@ const notion = new Client({
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 export const getAllPosts = async () => {
+  const databaseId = process.env.NOTION_DATABASE_ID;
+
+  if (!databaseId) {
+    throw new Error("データベースIDが設定されていません");
+  }
   const posts = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID,
+    database_id: databaseId,
     page_size: 100,
     filter: {
       property: "Published",
