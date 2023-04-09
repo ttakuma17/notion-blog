@@ -24,6 +24,7 @@ export const getAllPosts = async () => {
 
 const getPageMetaData = (post) => {
   const getTags = (tags) => {
+    console.log(tags);
     const allTags = tags.map((tag) => {
       return tag.name;
     });
@@ -60,7 +61,7 @@ export const getSinglePost = async (slug) => {
   // console.log(metadata);
   const mdBlocks = await n2m.pageToMarkdown(page.id);
   const mbString = n2m.toMarkdownString(mdBlocks);
-  console.log(mbString);
+  // console.log(mbString);
 
   return {
     metadata,
@@ -93,4 +94,18 @@ export const getNumberOfPages = async () => {
     Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
     (allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
   );
+};
+
+export const getPostsByTagAndPage = async (tagName: string, page: number) => {
+  const allPosts = await getAllPosts();
+
+  const posts = allPosts.filter((post) => {
+    return post.tags.find((tag: string) => tag === tagName);
+  });
+
+  const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE;
+
+  const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE;
+
+  return posts.slice(startIndex, endIndex);
 };

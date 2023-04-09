@@ -36,14 +36,16 @@ export default function Home({ fourPosts }) {
           Notion Blog 🚀
         </h1>
         {fourPosts.map((post) => (
-          <SinglePost
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            tags={post.tags}
-            slug={post.slug}
-            isPagenationPage={false}
-          />
+          <div className="mx-auto" key={post.id}>
+            <SinglePost
+              title={post.title}
+              description={post.description}
+              date={post.date}
+              tags={post.tags}
+              slug={post.slug}
+              isPagenationPage={false}
+            />
+          </div>
         ))}
         <Link
           href="/posts/page/1"
