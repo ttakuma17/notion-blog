@@ -1,7 +1,5 @@
 import Head from "next/head";
 import {
-  getPostsByPage,
-  getNumberOfPages,
   getAllTags,
   getPostsByTagAndPage,
   getNumberOfPagesById,
@@ -15,16 +13,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   let params = [];
 
-  allTags.map((tag: string) => {
-    return getNumberOfPagesById(tag).then((numberOfPageByTag: number) => {
-      for (let i = 1; i <= numberOfPageByTag; i++) {
-        params.push({ params: { tag: tag, page: i.toString() } });
-      }
-    });
-  });
+  await Promise.all(
+    allTags.map((tag: string) => {
+      return getNumberOfPagesById(tag).then((numberOfPageByTag: number) => {
+        for (let i = 1; i <= numberOfPageByTag; i++) {
+          params.push({ params: { tag: tag, page: i.toString() } });
+        }
+      });
+    })
+  );
 
   return {
-    paths: [{ params: { tag: "blog", page: "1" } }],
+    paths: params,
     fallback: "blocking",
   };
 };
@@ -41,15 +41,19 @@ export const getStaticProps: GetStaticProps = async (context) => {
     parseInt(currentPage, 10)
   );
 
+  const numberOfPagesByTag = await getNumberOfPagesById(uppercaseCurrentTag);
+
   return {
     props: {
       posts,
+      numberOfPagesByTag,
+      uppercaseCurrentTag,
     },
     revalidate: 60,
   };
 };
 
-const BlogTagPageList = ({ posts, numberOfPage }) => {
+const BlogTagPageList = ({ posts, numberOfPagesByTag, currentTag }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -76,7 +80,7 @@ const BlogTagPageList = ({ posts, numberOfPage }) => {
             </div>
           ))}
         </section>
-        <Pagination numberOfPage={numberOfPage} />
+        <Pagination numberOfPage={numberOfPagesByTag} tag={currentTag} />
       </main>
     </div>
   );

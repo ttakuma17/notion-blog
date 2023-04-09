@@ -2,8 +2,6 @@ import React from "react";
 import { getAllPosts, getSinglePost } from "../../../lib/notionAPI";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-// esm　から import するとインポートができない
-// import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -15,9 +13,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: paths,
     fallback: "blocking",
-    // fallback: false は、存在しないページにアクセスした場合に404ページを表示する
-    // fallback: "blocking"は、存在しないページにアクセスした場合に、ビルド時に指定したパスを表示する
-    // fallback: trueは、存在しないページにアクセスした場合に、ビルド時に指定したパスを表示する
   };
 };
 

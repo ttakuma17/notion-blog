@@ -1,20 +1,14 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
 import { getPostsForTopPage } from "../../lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
 import Link from "next/link";
-
-const inter = Inter({ subsets: ["latin"] });
-
-// SSG - ビルドした時点でデータを取得している
-// ISR - SSG もしつつ○秒ごとに更新する revalidate: 60
+import Tag from "@/components/Tag/Tag";
 
 export const getStaticProps = async () => {
   const fourPosts = await getPostsForTopPage(4);
 
   return {
     props: {
-      // allPosts: allPosts, 1行へまとめておく
       fourPosts,
     },
     revalidate: 60,
@@ -22,7 +16,6 @@ export const getStaticProps = async () => {
 };
 
 export default function Home({ fourPosts }) {
-  // console.log(allPosts);
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -53,6 +46,7 @@ export default function Home({ fourPosts }) {
         >
           .....もっとみる
         </Link>
+        <Tag />
       </main>
     </div>
   );

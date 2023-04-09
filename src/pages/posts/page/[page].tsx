@@ -7,9 +7,6 @@ import Pagination from "@/components/Pagination/Pagination";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// SSG - ビルドした時点でデータを取得している
-// ISR - SSG もしつつ○秒ごとに更新する revalidate: 60
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const numberOfPage = await getNumberOfPages();
 
@@ -67,7 +64,7 @@ const BlogPageList = ({ postsByPage, numberOfPage }) => {
             </div>
           ))}
         </section>
-        <Pagination numberOfPage={numberOfPage} />
+        <Pagination numberOfPage={numberOfPage} tag={""} />
       </main>
     </div>
   );

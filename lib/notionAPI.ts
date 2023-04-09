@@ -10,7 +10,6 @@ const n2m = new NotionToMarkdown({ notionClient: notion });
 
 export const getAllPosts = async () => {
   const posts = await notion.databases.query({
-    // NOTION_DATABASE_ID が string | undefined になってるので、型エラーが出る
     database_id: process.env.NOTION_DATABASE_ID,
     page_size: 100,
   });
@@ -58,10 +57,8 @@ export const getSinglePost = async (slug) => {
   const page = response.results[0];
   const metadata = getPageMetaData(page);
 
-  // console.log(metadata);
   const mdBlocks = await n2m.pageToMarkdown(page.id);
   const mbString = n2m.toMarkdownString(mdBlocks);
-  // console.log(mbString);
 
   return {
     metadata,
