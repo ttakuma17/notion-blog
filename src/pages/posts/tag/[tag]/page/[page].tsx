@@ -11,7 +11,6 @@ import Tag from "@/components/Tag/Tag";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const allTags = await getAllTags();
-
   let params = [];
 
   await Promise.all(
@@ -23,6 +22,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
       });
     })
   );
+
+  // console.log(params); // ここまではOK
 
   return {
     paths: params,
@@ -47,9 +48,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   return {
     props: {
-      posts,
       numberOfPagesByTag,
-      uppercaseCurrentTag,
+      posts,
+      currentTag,
       allTags,
     },
     revalidate: 60,

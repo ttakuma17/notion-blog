@@ -133,8 +133,8 @@ export const getNumberOfPagesById = async (tagName: string) => {
 
 export const getAllTags = async () => {
   const allPosts = await getAllPosts();
-
   const allTagsDuplicationLists = allPosts.flatMap((post) => post.tags);
+
   const set = new Set(allTagsDuplicationLists);
   const allTagsList = Array.from(set);
 
